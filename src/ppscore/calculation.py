@@ -36,7 +36,9 @@ def _calculate_model_cv_score_(
     # if there is a strong pattern in the rows eg 0,0,0,0,1,1,1,1
     # then this will lead to problems because the first cv sees mostly 0 and the later 1
     # this approach might be wrong for timeseries because it might leak information
-    df = df.sample(frac=1, random_state=random_seed, replace=False)
+    # remove df.sample for time-series use-case
+    # also remember to call the pps.score() with sample=None to avoid another df.sample later
+    # df = df.sample(frac=1, random_state=random_seed, replace=False)
 
     # preprocess target
     if task["type"] == "classification":
@@ -129,7 +131,9 @@ VALID_CALCULATIONS = {
         "ppscore": TO_BE_CALCULATED,
         "metric_name": "mean absolute error",
         "metric_key": "neg_mean_absolute_error",
-        "model": tree.DecisionTreeRegressor(),
+        # "model": tree.DecisionTreeRegressor(),
+        # avoid overtrain for time-series with only 60 days at a time
+        "model": tree.DecisionTreeRegressor(criterion='absolute_error', max_depth=3),
         "score_normalizer": _mae_normalizer,
     },
     "classification": {
