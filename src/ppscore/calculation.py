@@ -4,6 +4,7 @@ from sklearn import tree
 from sklearn import preprocessing
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_absolute_error, f1_score
+from sklearn.dummy import DummyRegressor
 
 import pandas as pd
 from pandas.api.types import (
@@ -25,6 +26,10 @@ def _calculate_model_cv_score_(
     df, target, feature, task, cross_validation, random_seed, **kwargs
 ):
     "Calculates the mean model score based on cross-validation"
+    #print(df.shape)
+    #print(df)
+
+    
     # Sources about the used methods:
     # https://scikit-learn.org/stable/modules/tree.html
     # https://scikit-learn.org/stable/modules/cross_validation.html
@@ -66,6 +71,50 @@ def _calculate_model_cv_score_(
     scores = cross_val_score(
         model, feature_input, target_series.to_numpy(), cv=cross_validation, scoring=metric
     )
+    #print(f"scores={scores}")
+    #scores_mean = scores.mean()
+    #print(f"scores_mean={scores_mean}")
+
+    # calculate the naive score also with cross validation for time series
+    #model_naive = DummyRegressor(strategy="median", constant=None, quantile=None)
+    #scores_naive = cross_val_score(
+    #    model_naive, feature_input, target_series.to_numpy(), cv=cross_validation, scoring=metric
+    #)
+    #print(len(feature_input))
+    #print(len(target_series))
+    #wf_ts_cv = cross_validation
+    #medians = []
+    #mae = []
+    #for i, (train_index, test_index) in enumerate(wf_ts_cv.split(df)):
+    #    # print(test_index)
+    #    train = df.iloc[train_index]
+    #    test = df.iloc[test_index]
+    #    print(
+    #        f"i={str(i).zfill(2)}, "
+    #        f"train={train.index.min().date()} to {train.index.max().date()} for {len(train):-3} days, "
+    #        f"test={test.index.min().date()} to {test.index.max().date()} for {len(test)} days,"
+    #    )
+    #    print(test[target].values)
+    #    medians.append(train[target].median())
+    #    mae.append() # calculate add this column to test and then calculate the mae of test
+        # then CV creates the averages of mae values, to see if we reproduce correctly
+        # do something with the train and test sets
+    #    pass
+    #print(f"medians={medians}")
+    #print(f"scores_naive={scores_naive}")
+    #scores_naive_mean = scores_naive.mean()
+    #print(f"scores_naive_mean={scores_naive_mean}")
+    # before
+    #score_naive_current = mean_absolute_error(target_series.to_numpy(), np.median(target_series.to_numpy())*np.ones(target_series.to_numpy().shape))
+    # score_naive_current = mean_absolute_error(target_series, np.median(target_series)*np.z)
+    #print(f"score_naive_current={score_naive_current}")
+    #score_medians = mean_absolute_error(target_series.to_numpy(), np.array(medians))
+    #print(f"score_medians={score_medians}")
+
+    # pps_current
+    #pps_current= _normalized_mae_score(abs(scores_mean), score_naive_current)
+    #pps_new= _normalized_mae_score(abs(scores_mean), abs(scores_naive_mean))
+    #print(f"pps_current={pps_current} pps_new={pps_new}")
 
     return scores.mean()
 
